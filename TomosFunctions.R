@@ -7,7 +7,7 @@
 # Computes DIC using Gelman's equation. Input is the summary of coda samples.
 # "deviance" should be one of the monitored parameters and "dic" module
 # needs to be loaded prior to defining model. load.module('dic') when
-# using rjags.
+# using rjags. 27 March 2018
 DIC <- function(summary.zm){
 	D <- summary.zm$statistics['deviance',]
 	DIC <-  D['Mean'] + 0.5 * (D['SD'])^2
@@ -534,6 +534,7 @@ plot.sst.SCB <- function(plot.date = "2018-01-01"){
 }
 
 # converting three character month names to integer - may be in lubridate... 
+# added tolower() 27 March 2018
 mmm2month <- function(x){
   switch(as.character(tolower(x)),
          "jan" = 1, "feb" = 2, "mar" = 3, "apr" = 4,
