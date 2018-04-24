@@ -337,6 +337,18 @@ labelNumber <- function(inObj, objName){
   return(objNum)
 }
 
+## convert nm to sm
+nm2sm <- function(nm){
+  sm <- 1.15078 * nm
+  return(sm)
+}
+
+## convert sm to nm
+sm2nm <- function(sm){
+  nm <- sm / 1.15078
+  return(nm)
+}
+
 ## Convert nm to km
 nm2km <- function(nm){
   km <- nm * 1.852
