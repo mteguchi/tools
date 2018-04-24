@@ -2,12 +2,37 @@
 # includes some functions that are used often in my R scripts
 
 # Tomo Eguchi
-# 12 February 2014
+# 12 February 2014 Started
 
-# Computes DIC using Gelman's equation. Input is the summary of coda samples.
-# "deviance" should be one of the monitored parameters and "dic" module
-# needs to be loaded prior to defining model. load.module('dic') when
-# using rjags. 27 March 2018
+
+# Extracting posterior samples of deviance or any other variable from jags output:
+extract.samples <- function(zm, varname){
+  dev <- unlist(lapply(zm, FUN = function(x) x[, varname]))
+  return(dev)
+}
+
+#` Computes DIC using Gelman's equation. Input is the summary of coda samples.
+#` "deviance" should be one of the monitored parameters and "dic" module
+#` needs to be loaded prior to defining model. load.module('dic') when
+#` using rjags. 27 March 2018
+#`
+#` @param summary.zm summary of coda samples
+#` @return a DIC value
+#` @seealso
+#` @export
+#` @examples
+#` jm <- jags.model(file = 'jags_model.txt',
+#`                  data = bugs.data,
+#`                  inits = inits.function,
+#`                  n.chains = n.chains,
+#`                  n.adapt = n.iter)
+#` params <- c('c', 'theta', 'sigma', 'y', 'deviance')
+#` zm <- coda.samples(jm,
+#`                   variable.names = params,
+#`                   n.iter = n.iter)
+#` summary.zm <- summary(zm)
+#` DIC(summary.zm)
+
 DIC <- function(summary.zm){
 	D <- summary.zm$statistics['deviance',]
 	DIC <-  D['Mean'] + 0.5 * (D['SD'])^2
@@ -15,7 +40,8 @@ DIC <- function(summary.zm){
 	return(DIC)
 }
 
-# beta.params computes beta parameters from mean and variance
+#` Computes beta parameters from mean and variance
+#`
 beta.params <- function(m, v){
   a <- ((1 - m) * (m^2))/v - m
   a[a < 0] <- NA
@@ -210,7 +236,7 @@ yyyymmdd2DOY <- function(x){
   m <- yyyymmdd2M(x)
   d <- yyyymmdd2D(x)
   YMD2DOY(paste0(Y, '-', m, '-', d))
-} 
+}
 
 mmddyy2date <- function(x){
   mm <- floor(x/10000)
@@ -229,8 +255,8 @@ hhmmss2hms <- function(x){
   hh <- floor(x.num/10000)
   mm <- floor((x.num - 10000 * hh)/100)
   ss <- round(((x.num - 10000 * hh)/100 - mm) * 100)
-  return(paste0(formatC(hh, width = 2, flag = "0"), ':', 
-    formatC(mm, width = 2, flag = "0"), ':', 
+  return(paste0(formatC(hh, width = 2, flag = "0"), ':',
+    formatC(mm, width = 2, flag = "0"), ':',
       formatC(ss, width = 2, flag = "0")))
 }
 
@@ -443,8 +469,8 @@ math2geo <- function(mdeg){
 }
 
 local2UTC <- function(local.time = Sys.time(), local.tz = Sys.timezone()){
-  local <- as.POSIXct(local.time, 
-                      origin = '1970-01-01', 
+  local <- as.POSIXct(local.time,
+                      origin = '1970-01-01',
                       format = '%Y-%m-%d %H:%M:%S',
                       tz = local.tz)
   UTC <- lubridate::with_tz(local, tz = 'UTC')
@@ -467,7 +493,7 @@ remove.ext <- function(filename){
   return(filename[1])
 }
 
-write.csv.rename <- function(x, file, quote = TRUE, 
+write.csv.rename <- function(x, file, quote = TRUE,
   eol = "\n", na = "NA", row.names = TRUE, fileEncoding = ""){
 
   if (file.exists(file)){
@@ -484,7 +510,7 @@ write.csv.rename <- function(x, file, quote = TRUE,
     file.rename(file, new.file.name)
   }
 
-  write.csv(x, file = file, quote = quote, 
+  write.csv(x, file = file, quote = quote,
       eol = eol, na = na, row.names = row.names,
       fileEncoding = fileEncoding)
 }
@@ -499,7 +525,7 @@ replace.NA <- function(x, replaceWith = 0){
 # from https://stackoverflow.com/questions/19200841/consecutive-rolling-sums-in-a-vector-in-r
 moving.cumsum <- function(x, n = 2){
   # computes cumulative sum over a span
-  y <- rowSums(outer(1:(length(x)-n+1), 
+  y <- rowSums(outer(1:(length(x)-n+1),
     1:n,
     FUN=function(i,j){x[(j - 1) + i]}))
   #y <- c(rep(NA, n-1), y)
@@ -521,7 +547,7 @@ plot.sst.SCB <- function(plot.date = "2018-01-01"){
     } else {
       URL <- paste0("http://coastwatch.pfeg.noaa.gov/erddap/griddap/",
         "erdMWsstd14day.largePng?sst%5B(", plot.date[k], "T00:00:00Z)%5D%5B",
-        "(0.0)%5D%5B(31.005):(36.005)%5D%5B(238.005):(243.005)%5D", 
+        "(0.0)%5D%5B(31.005):(36.005)%5D%5B(238.005):(243.005)%5D",
         "&.draw=surface&.vars=longitude%7Clatitude%7Csst&",
         ".colorBar=%7C%7C%7C%7C%7C&.bgColor=0xffccccff")
       download.file(URL,
@@ -533,7 +559,7 @@ plot.sst.SCB <- function(plot.date = "2018-01-01"){
   }
 }
 
-# converting three character month names to integer - may be in lubridate... 
+# converting three character month names to integer - may be in lubridate...
 # added tolower() 27 March 2018
 mmm2month <- function(x){
   switch(as.character(tolower(x)),
