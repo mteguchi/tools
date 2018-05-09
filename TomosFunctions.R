@@ -6,7 +6,7 @@
 
 
 # Extracting posterior samples of deviance or any other variable from jags output:
-extract.samples <- function(zm, varname){
+extract.samples <- function(varname, zm){
   dev <- unlist(lapply(zm, FUN = function(x) x[, varname]))
   return(dev)
 }
