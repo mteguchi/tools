@@ -395,6 +395,10 @@ C2F <- function(x) x * 1.8 + 32
 
 F2C <- function(x) (x - 32)/1.8
 
+kg2lb <- function(x) x * 2.20462
+
+lb2kg <- function(x) x / 2.20462
+
 SE <- function(x) sd(x, na.rm = T)/sqrt(length(na.omit(x)))
 
 # plotting gam output with ggplot - found it here:
