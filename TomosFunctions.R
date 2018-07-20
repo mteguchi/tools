@@ -583,3 +583,13 @@ mmm2month <- function(x){
          "may" = 5, "jun" = 6, "jul" = 7, "aug" = 8,
          "sep" = 9, "oct" = 10, "nov" = 11, "dec" = 12, NA)
 }
+
+# This function extracts total and polygon specific areas from SpatialPolygonsDataFrame
+# 20 July 2018
+extract.areas <- function(x){
+  total.area <- sapply(slot(x, "polygons"), slot, "area")
+  polys <- lapply(x@polygons, slot, "Polygons")
+  each.area <- lapply(polys[[1]], function(x) slot(x, "area"))
+  return(list(total.area = total.area,
+              poly.areas = each.area))
+}
