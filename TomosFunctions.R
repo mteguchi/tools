@@ -238,12 +238,18 @@ yyyymmdd2DOY <- function(x){
   YMD2DOY(paste0(Y, '-', m, '-', d))
 }
 
+yyyymmdd2date <- function(x){
+  return(as.Date(paste(yyyymmdd2Y(x), yyyymmdd2M(x), yyyymmdd2D(x), 
+    sep = "-"),
+    format = "%Y-%m-%d"))
+}
+
 mmddyy2date <- function(x){
-  mm <- floor(x/10000)
+  mm <- floor(as.numeric(x)/10000)
   mm.char <- formatC(mm, width = 2, flag = '0')
-  dd <- floor((x - mm*10000)/100)
+  dd <- floor((as.numeric(x) - mm*10000)/100)
   dd.char <- formatC(dd, width = 2, flag = '0')
-  yy <- x - mm*10000 - dd*100
+  yy <- as.numeric(x) - mm*10000 - dd*100
   Y <- ifelse(yy > 50, 1900 + yy, 2000 + yy)
   return(paste(Y, mm.char, dd.char, sep = "-"))
 }
