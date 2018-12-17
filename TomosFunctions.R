@@ -535,8 +535,8 @@ write.csv.rename <- function(x, file, quote = TRUE,
   }
 
   write.csv(x, file = file, quote = quote,
-      eol = eol, na = na, row.names = row.names,
-      fileEncoding = fileEncoding)
+            eol = eol, na = na, row.names = row.names,
+            fileEncoding = fileEncoding)
 }
 
 replace.NA <- function(x, replaceWith = 0){
@@ -550,36 +550,38 @@ replace.NA <- function(x, replaceWith = 0){
 moving.cumsum <- function(x, n = 2){
   # computes cumulative sum over a span
   y <- rowSums(outer(1:(length(x)-n+1),
-    1:n,
-    FUN=function(i,j){x[(j - 1) + i]}))
+                     1:n,
+                     FUN=function(i,j){x[(j - 1) + i]}))
   #y <- c(rep(NA, n-1), y)
   return(y)
 }
 
-plot.sst.SCB <- function(plot.date = "2018-01-01"){
+plot.sst.SCB <- function(plot.date = (Sys.Date() - 7), dest.dir = NULL){
   for (k in 1:length(plot.date)){
-    if (as.Date(plot.date[k], format = "%Y-%m-%d") < as.Date("2017-10-01", format = "%Y-%m-%d")){
-    URL <- paste0('http://coastwatch.pfeg.noaa.gov/erddap/griddap/jplG1SST.largePng?SST[(',
-                plot.date[k], 'T00:00:00Z)][(31.005):(36.005)][(-121.995):(-116.995)]',
-                '&.draw=surface&.vars=longitude%7Clatitude%7CSST',
-                '&.colorBar=%7C%7C%7C12%7C26%7C&.bgColor=0xffccccff')
-
+    # if (as.Date(plot.date[k], 
+    #             format = "%Y-%m-%d") < as.Date("2017-10-01", 
+    #                                            format = "%Y-%m-%d")){
+    # URL <- paste0('http://coastwatch.pfeg.noaa.gov/erddap/griddap/jplG1SST.largePng?SST[(',
+    #             plot.date[k], 'T00:00:00Z)][(31.005):(36.005)][(-121.995):(-116.995)]',
+    #             '&.draw=surface&.vars=longitude%7Clatitude%7CSST',
+    #             '&.colorBar=%7C%7C%7C12%7C26%7C&.bgColor=0xffccccff')
+    # 
+    # download.file(URL,
+    #               destfile = paste0(dest.dir, 'jplG1SST_', plot.date[k], '.png'),
+    #               mode='wb')
+    # 
+    # } else {
+    URL <- paste0("http://coastwatch.pfeg.noaa.gov/erddap/griddap/",
+                  "erdMWsstd14day.largePng?sst%5B(", plot.date[k], "T00:00:00Z)%5D%5B",
+                  "(0.0)%5D%5B(31.005):(36.005)%5D%5B(238.005):(243.005)%5D",
+                  "&.draw=surface&.vars=longitude%7Clatitude%7Csst&",
+                  ".colorBar=%7C%7C%7C%7C%7C&.bgColor=0xffccccff")
     download.file(URL,
-                destfile = paste0('figures/jplG1SST_', plot.date[k], '.png'),
-                mode='wb')
-
-    } else {
-      URL <- paste0("http://coastwatch.pfeg.noaa.gov/erddap/griddap/",
-        "erdMWsstd14day.largePng?sst%5B(", plot.date[k], "T00:00:00Z)%5D%5B",
-        "(0.0)%5D%5B(31.005):(36.005)%5D%5B(238.005):(243.005)%5D",
-        "&.draw=surface&.vars=longitude%7Clatitude%7Csst&",
-        ".colorBar=%7C%7C%7C%7C%7C&.bgColor=0xffccccff")
-      download.file(URL,
-                destfile = paste0('figures/MWsst14day_', plot.date[k], '.png'),
-                mode='wb')
-
-    }
-
+                  destfile = paste0(dest.dir, 'MWsst14day_', plot.date[k], '.png'),
+                  mode='wb')
+    
+    #}
+    
   }
 }
 
