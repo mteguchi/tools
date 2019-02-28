@@ -603,3 +603,25 @@ extract.areas <- function(x){
   return(list(total.area = total.area,
               poly.areas = each.area))
 }
+
+
+# function to convert lat/lon data frame into spatial data frame
+latlon2sp <- function(in.df, center.UTM = center.UTM){
+  sp::coordinates(in.df) <- c("X", "Y")
+  sp::proj4string(in.df) <- sp::CRS("+proj=longlat +datum=WGS84")
+  out.df <- sp::spTransform(in.df, sp::CRS("+proj=utm +zone=10 ellps=WGS84"))
+  out.df$newX <- (out.df$X - center.UTM$X)/1000
+  out.df$newY <- (out.df$Y - center.UTM$Y)/1000
+  return(out.df)
+}
+
+# function to convert the new coordinate system back to lat/lon
+sp2latlon <- function(in.xy, center.UTM = center.UTM){
+  X <- in.xy$newX * 1000 + center.UTM$X
+  Y <- in.xy$newY * 1000 + center.UTM$Y
+  in.df <- data.frame(X = X, Y = Y)
+  sp::coordinates(in.df) <- c('X', 'Y')
+  sp::proj4string(in.df) <- sp::CRS("+proj=utm +zone=10 ellps=WGS84")
+  out.df <- sp::spTransform(in.df, sp::CRS("+proj=longlat +datum=WGS84"))
+  return(out.df)
+}
