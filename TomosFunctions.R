@@ -4,8 +4,8 @@
 # Tomo Eguchi
 # 12 February 2014 Started
 
-if (Sys.info()["nodename"] == "SWC-TEGUCHI1-D")
-  .libPaths("C:/Users/tomo.eguchi/AppData/Local/R")
+#if (Sys.info()["nodename"] == "SWC-TEGUCHI1-D")
+#  .libPaths("C:/Users/tomo.eguchi/AppData/Local/R")
 
 # Extracting posterior samples of deviance or any other variable from jags output:
 extract.samples <- function(varname, zm){
