@@ -145,7 +145,7 @@ dirSelector <- function(){
     Rdir <- '~/Documents/R/'
     Dpub <- '~/Documents/TomosFolders/publications/'
   } else if (sysInfo[1] == 'Windows'){
-    if (sysInfo[4] == 'SWC-TEGUCHI-D'){
+    if (sysInfo[4] == 'SWC-TEGUCHI1-D'){
       D00 <- "D:/TomosFolders/"
       Dpub <- "C:/Users/t_e/Documents/Publications/"
       Rdir <- "~/R/"
