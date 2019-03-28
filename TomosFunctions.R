@@ -604,33 +604,50 @@ extract.areas <- function(x){
               poly.areas = each.area))
 }
 
-# the folllowing function was found here: https://stackoverflow.com/questions/9186496/determining-utm-zone-to-convert-from-longitude-latitude
+# the folllowing function was found here: 
+#https://stackoverflow.com/questions/9186496/determining-utm-zone-to-convert-from-longitude-latitude
 long2UTM <- function(long) {
   (floor((long + 180)/6) %% 60) + 1
 }
 
 # function to onvert a lat-lon pair to UTM coordinates. Approprite UTM zone
 # is computed using long2UTM function found online. See above. 
-latlon2UTM <- function(lat, lon, zone = NULL){
-  if (is.null(zone))  zone <- long2UTM(lon)
+latlon2UTM <- function(lat = NULL, long = NULL, in.df = NULL, zone = NULL){
+  if ((is.null(lat) & is.null(in.df)) | (is.null(long) & is.null(in.df)) ){
+    stop("Need to provide either a lat/long pair or a dataframe.")
+  }
+
+  if (is.null(zone))  zone <- long2UTM(long)
   
-  approx.center <- data.frame(X=lon, Y=lat)
-  sp::coordinates(approx.center) <- c("X", "Y")
-  sp::proj4string(approx.center) <- sp::CRS("+proj=longlat +datum=WGS84")
-  center.UTM <- sp::spTransform(approx.center,
+ 
+  if (is.null(in.df)){
+    approx.center <- data.frame(X=long, Y=lat)
+    sp::coordinates(approx.center) <- c("X", "Y")
+    sp::proj4string(approx.center) <- sp::CRS("+proj=longlat +datum=WGS84")
+    out.UTM <- sp::spTransform(approx.center,
                             sp::CRS(paste0("+proj=utm +zone=", 
                                            zone, 
                                            " ellps=WGS84")))
-  return(center.UTM)
+    return(out.UTM)
+
+  } else {
+    sp::coordinates(in.df) <- c("X", "Y")
+    sp::proj4string(in.df) <- sp::CRS("+proj=longlat +datum=WGS84")
+    out.UTM <- sp::spTransform(in.df, sp::CRS(paste0("+proj=utm +zone=", 
+                                                  zone, 
+                                                  " ellps=WGS84")))
+
+  }
+  return(out.UTM)
 }
 
 
 # function to convert lat/lon data frame into spatial data frame
 # Requires a center point in UTM coordinates. Use latlon2UTM for that.  
 latlon2sp <- function(in.df, center.latlon, zone = NULL){
-  center.UTM <- latlon2UTM(center.latlon$lat, center.latlon$lon)
+  center.UTM <- latlon2UTM(center.latlon$lat, center.latlon$long)
   
-  if (is.null(zone)) zone <- long2UTM(center.latlon$lon)
+  if (is.null(zone)) zone <- long2UTM(center.latlon$long)
   
   sp::coordinates(in.df) <- c("X", "Y")
   sp::proj4string(in.df) <- sp::CRS("+proj=longlat +datum=WGS84")
@@ -641,6 +658,7 @@ latlon2sp <- function(in.df, center.latlon, zone = NULL){
   out.df$newY <- (out.df$Y - center.UTM$Y)/1000
   return(out.df)
 }
+
 
 # function to convert the new coordinate system back to lat/lon
 # need to provide center location in UTM and the approprite UTM zone
