@@ -7,6 +7,22 @@
 #if (Sys.info()["nodename"] == "SWC-TEGUCHI1-D")
 #  .libPaths("C:/Users/tomo.eguchi/AppData/Local/R")
 
+# Extract posterior samples from jagsUI output
+# zm is the object that comes back from jags in jagsUI
+# Do not include the index, e.g., [1], [2], etc.
+extract.samples.jagsUI <- function(varname, zm){
+  par.names <- unlist(dimnames(jm$samples[[1]])[2])
+  col.idx <- grep(varname, par.names)
+  samples.list <- list(length = length(col.idx))
+  
+  samples <- lapply(zm$samples, FUN = function(x) x[, col.idx])
+  for (k in 1:length(col.idx)){
+    samples.list[[k]] <- unlist(lapply(samples, FUN = function(x) x[,k]))
+  }
+
+  return(samples.list)
+}
+
 # Extracting posterior samples of deviance or any other variable from jags output:
 extract.samples <- function(varname, zm){
   dev <- unlist(lapply(zm, FUN = function(x) x[, varname]))
